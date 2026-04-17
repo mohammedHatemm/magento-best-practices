@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+    Module Declaration File (module.xml)
+    
+    This file declares:
+    1. Module name (must match folder structure: Elsherif/ModuleXmlDemo)
+    2. Module dependencies via <sequence> tag
+    
+    Note: setup_version is omitted because we use Declarative Schema (db_schema.xml)
+    for database operations in Magento 2.3+
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    
+    <!--
+        Module Declaration
+        
+        Variations you can use:
+        
+        1. Minimal (no dependencies):
+           <module name="Elsherif_ModuleXmlDemo"/>
+        
+        2. With setup_version (legacy, pre-2.3):
+           <module name="Elsherif_ModuleXmlDemo" setup_version="1.0.0"/>
+        
+        3. With sequence (current best practice):
+           <module name="Elsherif_ModuleXmlDemo">
+               <sequence>
+                   <module name="Magento_Store"/>
+               </sequence>
+           </module>
+    -->
+    
+    <module name="Elsherif_ModuleXmlDemo">
+        <!--
+            Sequence Dependencies
+            
+            Modules listed here will load BEFORE this module.
+            Add dependencies when:
+            - You use classes from another module
+            - You create plugins for another module's classes
+            - You override layouts/templates from another module
+            - You need database tables from another module
+        -->
+        <sequence>
+            <module name="Magento_Store"/>
+        </sequence>
+    </module>
+    
+</config>
