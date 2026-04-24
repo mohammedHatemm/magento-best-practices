@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Preference for PostInterface -->
+    <preference for="Elsherif\ModelDemo\Api\Data\PostInterface"
+                type="Elsherif\ModelDemo\Model\Post"/>
+
+    <!-- Preference for PostRepositoryInterface -->
+    <preference for="Elsherif\ModelDemo\Api\PostRepositoryInterface"
+                type="Elsherif\ModelDemo\Model\PostRepository"/>
+
+    <!-- Preference for PostSearchResultsInterface -->
+    <preference for="Elsherif\ModelDemo\Api\Data\PostSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults"/>
+
+</config>
