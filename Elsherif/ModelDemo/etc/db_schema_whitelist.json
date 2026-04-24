@@ -1,0 +1,21 @@
+{
+    "elsherif_blog_post": {
+        "column": {
+            "entity_id": true,
+            "title": true,
+            "content": true,
+            "url_key": true,
+            "is_active": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ELSHERIF_BLOG_POST_URL_KEY_UNIQUE": true
+        },
+        "index": {
+            "ELSHERIF_BLOG_POST_TITLE_FULLTEXT": true,
+            "ELSHERIF_BLOG_POST_IS_ACTIVE": true
+        }
+    }
+}
