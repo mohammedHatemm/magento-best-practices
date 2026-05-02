@@ -77,10 +77,10 @@ class Collection extends AbstractCollection
      *
      * @return string
      */
-    public function getSelectSql(): string
-    {
-        return $this->getSelect()->__toString();
-    }
+//    public function getSelectSql(): string
+//    {
+//        return $this->getSelect()->__toString();
+//    }
 
 
 
