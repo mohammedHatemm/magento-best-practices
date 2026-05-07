@@ -1,0 +1,23 @@
+<?php
+declare(strict_types=1);
+
+/** @var \Elsherif\BlocksDemo\Block\Demo $block */
+/** @var \Elsherif\BlocksDemo\ViewModel\DemoViewModel $viewModel */
+$viewModel = $block->getData('view_model');
+?>
+
+<div class="blocksdemo-container">
+    <h1><?= $block->escapeHtml($block->getWelcomeMessage()) ?></h1>
+    <p>Store: <?= $block->escapeHtml($block->getStoreName()) ?></p>
+    <p>Store Code: <?= $block->escapeHtml($viewModel->getStoreCode()) ?></p>
+
+    <h2><?= $block->escapeHtml(__('Demo Items')) ?></h2>
+    <ul class="demo-items">
+        <?php foreach ($viewModel->getDemoItems() as $item): ?>
+            <li>
+                <strong>ID:</strong> <?= $block->escapeHtml((string)$item['id']) ?> -
+                <strong>Name:</strong> <?= $block->escapeHtml($item['name']) ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
