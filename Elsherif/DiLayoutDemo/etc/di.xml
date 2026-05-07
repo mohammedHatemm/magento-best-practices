@@ -1,4 +1,47 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Elsherif\DiLayoutDemo\Api\ProductServiceInterface"
+                type="Elsherif\DiLayoutDemo\Model\ProductService"/>
+    <preference for="Elsherif\DiLayoutDemo\Api\ProductServiceInterface" type="Elsherif\DiLayoutDemo\Model\Data\Product"/>
+
+<type name="Elsherif\DiLayoutDemo\Helper\Data">
+
+    <arguments>
+        <argument name="welcomMassage" xsi:type="string" >hellow in my magento first di  </argument>
+        <argument name="defultLocation" xsi:type="string">ar_eg </argument>
+    </arguments>
+</type>
+    <type name="Elsherif\DiLayputDemo\Modle\ProductService">
+
+        <arguments>
+            <argument name="cacheLifetime" xsi:type="number" > 3600</argument>
+            <argument name="isDebugMode" xsi:type="boolean">false</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Catalog\Modle\Product">
+
+        <plugin name="elsherif_product_logger_plugin"
+                type="Elsherif\DiLayoutDemo\Plugin\ProductPlugin"
+                disabled="false"/>
+    </type>
+    <virtualType name="Elsherif\DiLayoutDemo\Logger\Virtual" type="Monolog\Logger">
+
+        <arguments>
+            <argument name="name" xsi:type="string">DiLayoutDemo</argument>
+        </arguments>
+    </virtualType>
+    <type name="Elsherif\DiLayoutDemo\Model\Product" shared="false"/>
+    <type name="Elsherif\DiLayoutDemo\Model\Data\Product" shared="false"/>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="elsherifTestCommand" xsi:type="object">
+                    Elsherif\DiLayoutDemo\Console\Command\TestDiCommand
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+
 </config>
