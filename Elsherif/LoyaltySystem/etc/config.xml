@@ -8,23 +8,18 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <loyalty_system>
-            <!-- General Settings -->
             <general>
                 <enabled>1</enabled>
-                <earn_rate>10</earn_rate>
+                <earn_rate>1</earn_rate>
                 <redeem_rate>10</redeem_rate>
-                <expiration_days>180</expiration_days>
+                <expiration_days>365</expiration_days>
                 <min_points_redeem>10</min_points_redeem>
                 <max_points_per_order>0</max_points_per_order>
             </general>
-            
-            <!-- Earning Rules -->
             <earning_rules>
                 <earn_on_tax>0</earn_on_tax>
                 <earn_on_shipping>0</earn_on_shipping>
             </earning_rules>
-            
-            <!-- Email Notifications -->
             <email>
                 <send_earn_email>1</send_earn_email>
                 <send_expiry_reminder>1</send_expiry_reminder>

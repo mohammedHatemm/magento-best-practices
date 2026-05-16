@@ -251,13 +251,21 @@ class PointsManagement implements PointsManagementInterface
             // Calculate discount
             $discount = $this->calculator->calculateDiscount($points);
 
-            // Apply to quote (via extension attributes)
+            // Apply to quote columns directly (for Total Collector)
+            $quote->setData('loyalty_points_used', $points);
+            $quote->setData('loyalty_discount_amount', $discount);
+
+            // Also set extension attributes for API compatibility
             $extensionAttributes = $quote->getExtensionAttributes();
             if ($extensionAttributes) {
                 $extensionAttributes->setLoyaltyPointsUsed($points);
                 $extensionAttributes->setLoyaltyDiscountAmount($discount);
                 $quote->setExtensionAttributes($extensionAttributes);
             }
+
+            // Trigger totals recalculation
+            $quote->setTotalsCollectedFlag(false);
+            $quote->collectTotals();
 
             // Save quote
             $this->quoteRepository->save($quote);
@@ -285,12 +293,21 @@ class PointsManagement implements PointsManagementInterface
         try {
             $quote = $this->quoteRepository->getActive($quoteId);
 
+            // Clear quote columns
+            $quote->setData('loyalty_points_used', 0);
+            $quote->setData('loyalty_discount_amount', 0.0);
+
+            // Clear extension attributes
             $extensionAttributes = $quote->getExtensionAttributes();
             if ($extensionAttributes) {
                 $extensionAttributes->setLoyaltyPointsUsed(0);
                 $extensionAttributes->setLoyaltyDiscountAmount(0.0);
                 $quote->setExtensionAttributes($extensionAttributes);
             }
+
+            // Recalculate totals
+            $quote->setTotalsCollectedFlag(false);
+            $quote->collectTotals();
 
             $this->quoteRepository->save($quote);
 

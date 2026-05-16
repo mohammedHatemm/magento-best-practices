@@ -1,56 +1,33 @@
 <?php
 /**
- * Plugin to Apply Loyalty Discount to Quote Totals
+ * Plugin to sync loyalty data with extension attributes
  */
 declare(strict_types=1);
 
 namespace Elsherif\LoyaltySystem\Plugin\Quote\Model;
 
 use Magento\Quote\Model\Quote;
-use Elsherif\LoyaltySystem\Model\PointsCalculator;
 
 class QuoteTotalPlugin
 {
-    private $calculator;
-
-    public function __construct(PointsCalculator $calculator)
-    {
-        $this->calculator = $calculator;
-    }
-
     /**
-     * Apply loyalty discount after totals collection
-     *
-     * @param Quote $subject
-     * @param Quote $result
-     * @return Quote
+     * Sync quote data columns with extension attributes after totals collection
+     * The actual discount is applied by the Total Collector
      */
-    public function afterCollectTotals(Quote $subject, $result)
+    public function afterCollectTotals(Quote $subject, Quote $result): Quote
     {
-        $extensionAttributes = $subject->getExtensionAttributes();
-        
-        if (!$extensionAttributes) {
-            return $result;
+        // Sync from quote columns to extension attributes
+        $loyaltyPointsUsed = (int) $subject->getData('loyalty_points_used');
+        $loyaltyDiscountAmount = (float) $subject->getData('loyalty_discount_amount');
+
+        if ($loyaltyPointsUsed > 0) {
+            $extensionAttributes = $subject->getExtensionAttributes();
+            if ($extensionAttributes) {
+                $extensionAttributes->setLoyaltyPointsUsed($loyaltyPointsUsed);
+                $extensionAttributes->setLoyaltyDiscountAmount($loyaltyDiscountAmount);
+                $subject->setExtensionAttributes($extensionAttributes);
+            }
         }
-
-        $pointsUsed = $extensionAttributes->getLoyaltyPointsUsed();
-        
-        if (!$pointsUsed || $pointsUsed <= 0) {
-            return $result;
-        }
-
-        // Calculate discount
-        $discount = $this->calculator->calculateDiscount($pointsUsed);
-
-        // Apply discount
-        $subject->setSubtotal($subject->getSubtotal() - $discount);
-        $subject->setBaseSubtotal($subject->getBaseSubtotal() - $discount);
-        $subject->setGrandTotal($subject->getGrandTotal() - $discount);
-        $subject->setBaseGrandTotal($subject->getBaseGrandTotal() - $discount);
-
-        // Store discount amount
-        $extensionAttributes->setLoyaltyDiscountAmount($discount);
-        $subject->setExtensionAttributes($extensionAttributes);
 
         return $result;
     }

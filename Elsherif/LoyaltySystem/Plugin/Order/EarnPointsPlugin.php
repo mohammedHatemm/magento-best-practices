@@ -5,6 +5,8 @@ namespace Elsherif\LoyaltySystem\Plugin\Order;
 
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Elsherif\LoyaltySystem\Api\PointsManagementInterface;
 use Elsherif\LoyaltySystem\Model\Config;
 use Elsherif\LoyaltySystem\Helper\Data as DataHelper;
@@ -15,51 +17,28 @@ use Psr\Log\LoggerInterface;
  */
 class EarnPointsPlugin
 {
-    /**
-     * @var PointsManagementInterface
-     */
     private PointsManagementInterface $pointsManagement;
-
-    /**
-     * @var Config
-     */
     private Config $config;
-
-    /**
-     * @var DataHelper
-     */
     private DataHelper $dataHelper;
-
-    /**
-     * @var LoggerInterface
-     */
     private LoggerInterface $logger;
+    private ProductRepositoryInterface $productRepository;
 
-    /**
-     * @param PointsManagementInterface $pointsManagement
-     * @param Config $config
-     * @param DataHelper $dataHelper
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         PointsManagementInterface $pointsManagement,
         Config $config,
         DataHelper $dataHelper,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ProductRepositoryInterface $productRepository
     ) {
         $this->pointsManagement = $pointsManagement;
         $this->config = $config;
         $this->dataHelper = $dataHelper;
         $this->logger = $logger;
+        $this->productRepository = $productRepository;
     }
 
     /**
      * Earn points after order is placed
-     *
-     * @param OrderManagementInterface $subject
-     * @param OrderInterface $result
-     * @param OrderInterface $order
-     * @return OrderInterface
      */
     public function afterPlace(
         OrderManagementInterface $subject,
@@ -67,25 +46,21 @@ class EarnPointsPlugin
         OrderInterface $order
     ): OrderInterface {
         try {
-            // Check if module is enabled
             if (!$this->config->isEnabled()) {
                 return $result;
             }
 
-            // Must have customer
             $customerId = (int) $result->getCustomerId();
             if (!$customerId) {
                 return $result;
             }
 
-            // Calculate points from order items
             $totalPoints = $this->calculateOrderPoints($result);
 
             if ($totalPoints <= 0) {
                 return $result;
             }
 
-            // Add points to customer
             $expiresAt = $this->dataHelper->getExpirationDate();
 
             $this->pointsManagement->addPoints(
@@ -97,7 +72,6 @@ class EarnPointsPlugin
                 "Earned from order #{$result->getIncrementId()}"
             );
 
-            // Update order extension attributes
             $result->setData('loyalty_points_earned', $totalPoints);
 
             $this->logger->info(
@@ -113,22 +87,13 @@ class EarnPointsPlugin
 
     /**
      * Calculate total points from order items
-     *
-     * @param OrderInterface $order
-     * @return int
      */
     private function calculateOrderPoints(OrderInterface $order): int
     {
         $totalPoints = 0;
 
         foreach ($order->getAllVisibleItems() as $item) {
-            $product = $item->getProduct();
-            
-            // Get points from product attribute
-            $productPoints = 0;
-            if ($product) {
-                $productPoints = (int) $product->getData('loyalty_points');
-            }
+            $productPoints = $this->getProductLoyaltyPoints($item);
 
             // If no product points set, use default calculation
             if ($productPoints <= 0) {
@@ -138,16 +103,71 @@ class EarnPointsPlugin
             // Multiply by quantity
             $itemPoints = $productPoints * (int) $item->getQtyOrdered();
             $totalPoints += $itemPoints;
+
+            $this->logger->debug(
+                "Loyalty: Item {$item->getSku()} - Points: {$productPoints} x Qty: {$item->getQtyOrdered()} = {$itemPoints}"
+            );
         }
 
         return $totalPoints;
     }
 
     /**
+     * Get loyalty points for a product, handling configurable products
+     */
+    private function getProductLoyaltyPoints($item): int
+    {
+        $productPoints = 0;
+        
+        try {
+            // First try to get points from the ordered product
+            $productId = (int) $item->getProductId();
+            
+            if ($productId) {
+                $product = $this->productRepository->getById($productId);
+                $productPoints = (int) $product->getData('loyalty_points');
+                
+                // If no points on child product, check parent (for configurable products)
+                if ($productPoints <= 0) {
+                    $parentProductId = $this->getParentProductId($item);
+                    if ($parentProductId) {
+                        $parentProduct = $this->productRepository->getById($parentProductId);
+                        $productPoints = (int) $parentProduct->getData('loyalty_points');
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->warning('Loyalty: Could not get product points: ' . $e->getMessage());
+        }
+        
+        return $productPoints;
+    }
+
+    /**
+     * Get parent product ID for configurable product children
+     */
+    private function getParentProductId($item): ?int
+    {
+        // Check if item has parent item (configurable product)
+        $parentItem = $item->getParentItem();
+        if ($parentItem) {
+            return (int) $parentItem->getProductId();
+        }
+
+        // Alternative: Check product options for parent
+        $productOptions = $item->getProductOptions();
+        if (isset($productOptions['info_buyRequest']['product'])) {
+            $parentId = (int) $productOptions['info_buyRequest']['product'];
+            if ($parentId !== (int) $item->getProductId()) {
+                return $parentId;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Calculate default points based on price
-     *
-     * @param \Magento\Sales\Api\Data\OrderItemInterface $item
-     * @return int
      */
     private function calculateDefaultPoints($item): int
     {
@@ -157,12 +177,12 @@ class EarnPointsPlugin
         // Subtract discount if applicable
         $rowTotal -= (float) $item->getDiscountAmount();
         
-        if ($rowTotal <= 0) {
+        if ($rowTotal <= 0 || $earnRate <= 0) {
             return 0;
         }
 
         // Calculate: price / earnRate = points
-        // e.g., $100 / 10 = 10 points (earn 1 point per $10)
+        // If earnRate = 1, then $100 = 100 points (1 point per $1)
         return (int) floor($rowTotal / $earnRate);
     }
 }

@@ -2,13 +2,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     
-    <!-- Note: Earn points is now handled by Plugin (EarnPointsPlugin) -->
-    
-    <!-- Deduct points when order uses loyalty discount -->
-    <event name="sales_order_place_after">
-        <observer name="loyalty_deduct_points" 
-                  instance="Elsherif\LoyaltySystem\Observer\DeductPointsOnOrderObserver"/>
-    </event>
+    <!-- 
+        Note: All main functionality uses Plugins instead of Observers:
+        - EarnPointsPlugin: Earns points on order place
+        - DeductPointsPlugin: Deducts points when using loyalty discount
+    -->
 
     <!-- Refund points when order is refunded -->
     <event name="sales_order_creditmemo_save_after">

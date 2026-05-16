@@ -1,33 +1,215 @@
+# Elsherif Loyalty System - GraphQL Schema
+# Full PWA Support
+
+# ============================================
+# QUERIES
+# ============================================
+
 type Query {
-    customerPoints: CustomerPointsBalance 
-        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CustomerPoints") 
-        @doc(description: "Get current customer's points balance") 
+    customerLoyaltyPoints: CustomerLoyaltyData
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CustomerPoints")
+        @doc(description: "Get current customer's loyalty points data")
         @cache(cacheIdentity: "Elsherif\\LoyaltySystem\\Model\\Resolver\\Identity\\PointsIdentity")
+
+    customerPointsHistory(
+        pageSize: Int = 10
+        currentPage: Int = 1
+    ): PointsTransactionList
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\PointsHistory")
+        @doc(description: "Get customer's points transaction history")
+
+    loyaltyConfig: LoyaltyConfiguration
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\LoyaltyConfig")
+        @doc(description: "Get loyalty program configuration")
 }
+
+# ============================================
+# MUTATIONS
+# ============================================
 
 type Mutation {
-    redeemPoints(input: RedeemPointsInput!): RedeemPointsOutput 
-        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\RedeemPoints")
+    applyLoyaltyPointsToCart(input: ApplyLoyaltyPointsInput!): ApplyLoyaltyPointsOutput
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ApplyPointsToCart")
+        @doc(description: "Apply loyalty points discount to cart")
+
+    removeLoyaltyPointsFromCart(cart_id: String!): RemoveLoyaltyPointsOutput
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\RemovePointsFromCart")
+        @doc(description: "Remove loyalty points discount from cart")
 }
 
-type CustomerPointsBalance {
+# ============================================
+# EXTEND CORE TYPES
+# ============================================
+
+# Extend Customer type
+extend type Customer {
+    loyalty_points: CustomerLoyaltyData
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CustomerLoyaltyResolver")
+        @doc(description: "Customer's loyalty points information")
+}
+
+# Extend Product interface for all product types
+extend interface ProductInterface {
+    loyalty_points_earn: Int
+        @doc(description: "Points customer will earn when purchasing this product")
+}
+
+extend type SimpleProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type ConfigurableProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type VirtualProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type DownloadableProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type BundleProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type GroupedProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+extend type GiftCardProduct {
+    loyalty_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\ProductLoyaltyPoints")
+}
+
+# Extend Cart type
+extend type Cart {
+    loyalty_points_used: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartLoyaltyPoints")
+        @doc(description: "Number of loyalty points applied to cart")
+    loyalty_discount_amount: Money
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartLoyaltyDiscount")
+        @doc(description: "Discount amount from loyalty points")
+    available_loyalty_points: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartAvailablePoints")
+        @doc(description: "Customer's available points for this cart")
+    max_redeemable_points: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartMaxRedeemablePoints")
+        @doc(description: "Maximum points that can be redeemed for this cart")
+    potential_points_earn: Int
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartPotentialPoints")
+        @doc(description: "Points customer will earn from this order")
+}
+
+# Extend Cart Prices
+extend type CartPrices {
+    loyalty_discount: Money
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CartPricesLoyaltyDiscount")
+        @doc(description: "Loyalty points discount applied")
+}
+
+# Extend Order type
+extend type CustomerOrder {
+    loyalty_points_earned: Int
+        @doc(description: "Points earned from this order")
+    loyalty_points_used: Int
+        @doc(description: "Points redeemed in this order")
+    loyalty_discount_amount: Money
+        @doc(description: "Discount from loyalty points")
+}
+
+# Extend Order Item
+extend type OrderItemInterface {
+    loyalty_points_earned: Int
+        @doc(description: "Points earned from this item")
+}
+
+# ============================================
+# CUSTOM TYPES
+# ============================================
+
+type CustomerLoyaltyData {
     balance_id: Int
     customer_id: Int
-    points: Int @doc(description: "Available points")
-    lifetime_points: Int
-    points_spent: Int
+    points: Int @doc(description: "Current available points")
+    lifetime_points: Int @doc(description: "Total points earned lifetime")
+    points_spent: Int @doc(description: "Total points redeemed")
+    points_pending: Int @doc(description: "Points pending from recent orders")
+    tier: LoyaltyTier @doc(description: "Customer's loyalty tier")
+    next_expiry: PointsExpiry @doc(description: "Next points expiration info")
     updated_at: String
 }
 
-input RedeemPointsInput {
-    cart_id: String!
-    points: Int!
+type LoyaltyTier {
+    name: String
+    code: String
+    min_points: Int
+    benefits: [String]
 }
 
-type RedeemPointsOutput {
-    success: Boolean
+type PointsExpiry {
+    points: Int
+    expiry_date: String
+}
+
+type PointsTransaction {
+    transaction_id: Int
+    action: String @doc(description: "Type of transaction: earn, redeem, expire, refund, admin")
+    points: Int @doc(description: "Points changed (positive for earn, negative for redeem)")
+    balance_after: Int
+    reference_id: Int @doc(description: "Related order ID if applicable")
+    comment: String
+    created_at: String
+    expires_at: String
+}
+
+type PointsTransactionList {
+    items: [PointsTransaction]
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type LoyaltyConfiguration {
+    is_enabled: Boolean
+    earn_rate: Float @doc(description: "Points earned per currency unit spent")
+    redeem_rate: Float @doc(description: "Currency value per point redeemed")
+    min_points_to_redeem: Int
+    max_points_per_order: Int
+    points_expiry_days: Int
+    allow_partial_redemption: Boolean
+}
+
+# ============================================
+# INPUT TYPES
+# ============================================
+
+input ApplyLoyaltyPointsInput {
+    cart_id: String! @doc(description: "Cart/Quote ID (masked for guests)")
+    points: Int! @doc(description: "Number of points to apply")
+}
+
+# ============================================
+# OUTPUT TYPES
+# ============================================
+
+type ApplyLoyaltyPointsOutput {
+    success: Boolean!
     message: String
+    cart: Cart
     points_used: Int
     discount_amount: Float
-    new_balance: Int
+    remaining_balance: Int
+}
+
+type RemoveLoyaltyPointsOutput {
+    success: Boolean!
+    message: String
+    cart: Cart
 }

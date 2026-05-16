@@ -1,20 +1,21 @@
 <?php
 /**
- * GraphQL Resolver for customerLoyaltyPoints Query
+ * GraphQL Resolver for Customer Loyalty Data
+ * Used when accessing customer.loyalty_points
  */
 declare(strict_types=1);
 
 namespace Elsherif\LoyaltySystem\Model\Resolver;
 
 use Magento\Framework\GraphQl\Config\Element\Field;
+use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
 use Elsherif\LoyaltySystem\Api\PointsManagementInterface;
 use Elsherif\LoyaltySystem\Helper\Config;
 use Elsherif\LoyaltySystem\Model\ResourceModel\PointsTransaction\CollectionFactory as TransactionCollectionFactory;
 
-class CustomerPoints implements ResolverInterface
+class CustomerLoyaltyResolver implements ResolverInterface
 {
     private PointsManagementInterface $pointsManagement;
     private Config $config;
@@ -41,21 +42,19 @@ class CustomerPoints implements ResolverInterface
             return null;
         }
 
-        if (!$context->getUserId()) {
-            throw new GraphQlAuthorizationException(__('Please login to view your loyalty points.'));
+        $customerId = $value['model']->getId() ?? null;
+        
+        if (!$customerId) {
+            return null;
         }
 
-        $customerId = (int) $context->getUserId();
-        $balance = $this->pointsManagement->getBalance($customerId);
-
-        // Get pending points
-        $pendingPoints = $this->getPendingPoints($customerId);
+        $balance = $this->pointsManagement->getBalance((int) $customerId);
         
-        // Get next expiry
-        $nextExpiry = $this->getNextExpiry($customerId);
+        // Get pending points (from orders not yet complete)
+        $pendingPoints = $this->getPendingPoints((int) $customerId);
         
-        // Get tier
-        $tier = $this->getCustomerTier($balance->getLifetimePoints());
+        // Get next expiry info
+        $nextExpiry = $this->getNextExpiry((int) $customerId);
 
         return [
             'balance_id' => $balance->getBalanceId(),
@@ -64,7 +63,7 @@ class CustomerPoints implements ResolverInterface
             'lifetime_points' => $balance->getLifetimePoints(),
             'points_spent' => $balance->getPointsSpent(),
             'points_pending' => $pendingPoints,
-            'tier' => $tier,
+            'tier' => $this->getCustomerTier($balance->getLifetimePoints()),
             'next_expiry' => $nextExpiry,
             'updated_at' => $balance->getUpdatedAt()
         ];
@@ -78,7 +77,7 @@ class CustomerPoints implements ResolverInterface
         
         $total = 0;
         foreach ($collection as $transaction) {
-            $total += (int) $transaction->getPoints();
+            $total += $transaction->getPoints();
         }
         
         return $total;
@@ -107,6 +106,7 @@ class CustomerPoints implements ResolverInterface
 
     private function getCustomerTier(int $lifetimePoints): array
     {
+        // Define tiers - can be moved to config
         $tiers = [
             ['code' => 'platinum', 'name' => 'Platinum', 'min_points' => 10000, 'benefits' => ['20% bonus points', 'Free shipping', 'Exclusive offers']],
             ['code' => 'gold', 'name' => 'Gold', 'min_points' => 5000, 'benefits' => ['15% bonus points', 'Priority support']],

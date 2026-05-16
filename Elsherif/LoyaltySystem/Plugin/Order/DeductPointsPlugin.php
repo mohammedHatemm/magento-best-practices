@@ -1,20 +1,19 @@
 <?php
 /**
- * Deduct Points When Order is Placed
+ * Plugin to deduct loyalty points when order is placed
  */
 declare(strict_types=1);
 
-namespace Elsherif\LoyaltySystem\Observer;
+namespace Elsherif\LoyaltySystem\Plugin\Order;
 
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Api\OrderManagementInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Elsherif\LoyaltySystem\Api\PointsManagementInterface;
 use Elsherif\LoyaltySystem\Model\Config;
 use Psr\Log\LoggerInterface;
 
-class DeductPointsOnOrderObserver implements ObserverInterface
+class DeductPointsPlugin
 {
     private PointsManagementInterface $pointsManagement;
     private CartRepositoryInterface $quoteRepository;
@@ -33,61 +32,67 @@ class DeductPointsOnOrderObserver implements ObserverInterface
         $this->logger = $logger;
     }
 
-    public function execute(Observer $observer): void
-    {
+    /**
+     * Deduct loyalty points after order is placed
+     */
+    public function afterPlace(
+        OrderManagementInterface $subject,
+        OrderInterface $result,
+        OrderInterface $order
+    ): OrderInterface {
         if (!$this->config->isEnabled()) {
-            return;
+            return $result;
         }
 
         try {
-            /** @var Order $order */
-            $order = $observer->getEvent()->getOrder();
-
-            if (!$order || !$order->getCustomerId()) {
-                return;
+            $customerId = (int) $result->getCustomerId();
+            if (!$customerId) {
+                return $result;
             }
 
-            // Try to get points from order first (if already set)
-            $pointsUsed = (int) $order->getData('loyalty_points_used');
-            $discountAmount = (float) $order->getData('loyalty_discount_amount');
+            // Get loyalty data from order or quote
+            $pointsUsed = (int) $result->getData('loyalty_points_used');
+            $discountAmount = (float) $result->getData('loyalty_discount_amount');
 
-            // If not on order, try to get from quote
+            // If not on order, try quote
             if ($pointsUsed <= 0) {
-                $quoteId = $order->getQuoteId();
+                $quoteId = $result->getQuoteId();
                 if ($quoteId) {
                     try {
                         $quote = $this->quoteRepository->get($quoteId);
                         $pointsUsed = (int) $quote->getData('loyalty_points_used');
                         $discountAmount = (float) $quote->getData('loyalty_discount_amount');
                     } catch (\Exception $e) {
-                        $this->logger->debug('Could not load quote: ' . $e->getMessage());
+                        $this->logger->debug('Loyalty: Could not load quote - ' . $e->getMessage());
                     }
                 }
             }
 
             if ($pointsUsed <= 0) {
-                return;
+                return $result;
             }
 
             // Deduct points from customer balance
             $this->pointsManagement->deductPoints(
-                (int) $order->getCustomerId(),
+                $customerId,
                 $pointsUsed,
                 'redemption',
-                (int) $order->getEntityId(),
-                "Redeemed on order #{$order->getIncrementId()}"
+                (int) $result->getEntityId(),
+                "Redeemed on order #{$result->getIncrementId()}"
             );
 
-            // Save to order columns
-            $order->setData('loyalty_points_used', $pointsUsed);
-            $order->setData('loyalty_discount_amount', $discountAmount);
+            // Ensure data is saved to order
+            $result->setData('loyalty_points_used', $pointsUsed);
+            $result->setData('loyalty_discount_amount', $discountAmount);
 
             $this->logger->info(
-                "Loyalty: Deducted {$pointsUsed} points from customer {$order->getCustomerId()} for order #{$order->getIncrementId()}"
+                "Loyalty: Deducted {$pointsUsed} points from customer {$customerId} for order #{$result->getIncrementId()}"
             );
 
         } catch (\Exception $e) {
-            $this->logger->error('Loyalty DeductPoints Error: ' . $e->getMessage());
+            $this->logger->error('Loyalty DeductPoints Plugin Error: ' . $e->getMessage());
         }
+
+        return $result;
     }
 }

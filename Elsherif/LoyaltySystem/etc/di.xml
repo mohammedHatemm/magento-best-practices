@@ -94,6 +94,16 @@
         <plugin name="loyalty_earn_points_on_order" 
                 type="Elsherif\LoyaltySystem\Plugin\Order\EarnPointsPlugin" 
                 sortOrder="10"/>
+        <plugin name="loyalty_deduct_points_on_order" 
+                type="Elsherif\LoyaltySystem\Plugin\Order\DeductPointsPlugin" 
+                sortOrder="20"/>
+    </type>
+    
+    <!-- Plugin: Copy loyalty data from quote to order -->
+    <type name="Magento\Quote\Model\Quote\Address\ToOrder">
+        <plugin name="loyalty_convert_quote_to_order" 
+                type="Elsherif\LoyaltySystem\Plugin\Quote\ConvertQuoteToOrder" 
+                sortOrder="10"/>
     </type>
     
     <!-- CLI Commands -->

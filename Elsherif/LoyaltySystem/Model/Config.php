@@ -68,7 +68,7 @@ class Config
     public function getEarnRate(?int $storeId = null): float
     {
         $rate = (float) $this->getConfigValue(self::XML_PATH_EARN_RATE, $storeId);
-        return $rate > 0 ? $rate : 10.0;
+        return $rate > 0 ? $rate : 1.0; // Default: 1 point per $1
     }
 
     /**
