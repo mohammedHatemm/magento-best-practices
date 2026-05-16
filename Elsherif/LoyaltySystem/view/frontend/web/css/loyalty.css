@@ -1,0 +1,429 @@
+/**
+ * Elsherif Loyalty System Styles
+ */
+
+/* =============================================
+   Customer Account - Points Dashboard
+   ============================================= */
+
+.loyalty-points-dashboard {
+    margin-bottom: 30px;
+}
+
+.loyalty-points-balance {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.loyalty-points-balance .points-value {
+    font-size: 48px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.loyalty-points-balance .points-label {
+    font-size: 16px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.loyalty-points-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.loyalty-stat-card {
+    flex: 1;
+    min-width: 200px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.loyalty-stat-card .stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    display: block;
+}
+
+.loyalty-stat-card .stat-label {
+    font-size: 13px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.loyalty-stat-card.earned {
+    border-left: 4px solid #28a745;
+}
+
+.loyalty-stat-card.spent {
+    border-left: 4px solid #dc3545;
+}
+
+/* =============================================
+   Transactions History
+   ============================================= */
+
+.loyalty-transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.loyalty-transactions-table th,
+.loyalty-transactions-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.loyalty-transactions-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.loyalty-transactions-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.loyalty-points-positive {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.loyalty-points-positive::before {
+    content: '+';
+}
+
+.loyalty-points-negative {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.loyalty-action-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.loyalty-action-badge.order_complete {
+    background: #d4edda;
+    color: #155724;
+}
+
+.loyalty-action-badge.redemption {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.loyalty-action-badge.expired {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.loyalty-action-badge.admin_adjust {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.loyalty-action-badge.refund {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+/* =============================================
+   Checkout - Points Redemption
+   ============================================= */
+
+.loyalty-checkout-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px solid #e9ecef;
+}
+
+.loyalty-checkout-form .form-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.loyalty-checkout-form .form-title .icon {
+    font-size: 20px;
+}
+
+.loyalty-checkout-form .points-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+}
+
+.loyalty-checkout-form .points-info .available {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.loyalty-checkout-form .input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.loyalty-checkout-form input[type="number"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.loyalty-checkout-form input[type="number"]:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.loyalty-checkout-form .btn-apply {
+    padding: 10px 20px;
+    background: #667eea;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.loyalty-checkout-form .btn-apply:hover {
+    background: #5a6fd6;
+}
+
+.loyalty-checkout-form .btn-apply:disabled {
+    background: #adb5bd;
+    cursor: not-allowed;
+}
+
+.loyalty-checkout-form .btn-cancel {
+    padding: 10px 20px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.loyalty-checkout-form .btn-cancel:hover {
+    background: #c82333;
+}
+
+.loyalty-checkout-form .discount-preview {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 10px;
+}
+
+.loyalty-checkout-form .discount-preview .amount {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.loyalty-checkout-form .applied-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px 15px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.loyalty-checkout-form .applied-message .icon {
+    font-size: 18px;
+}
+
+/* Loading State */
+.loyalty-checkout-form.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.loyalty-checkout-form.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid #667eea;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================
+   Order Summary - Points Line
+   ============================================= */
+
+.totals.loyalty-discount th,
+.totals.loyalty-discount td {
+    color: #28a745;
+}
+
+.totals.loyalty-discount .mark {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.totals.loyalty-discount .points-used {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: normal;
+}
+
+/* =============================================
+   Responsive Design
+   ============================================= */
+
+@media (max-width: 768px) {
+    .loyalty-points-balance {
+        padding: 20px;
+    }
+
+    .loyalty-points-balance .points-value {
+        font-size: 36px;
+    }
+
+    .loyalty-points-stats {
+        flex-direction: column;
+    }
+
+    .loyalty-stat-card {
+        min-width: 100%;
+    }
+
+    .loyalty-checkout-form .input-group {
+        flex-direction: column;
+    }
+
+    .loyalty-checkout-form .btn-apply,
+    .loyalty-checkout-form .btn-cancel {
+        width: 100%;
+    }
+}
+
+/* =============================================
+   Product Listing Points Badge
+   ============================================= */
+
+.loyalty-points-listing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.loyalty-points-listing .icon {
+    font-size: 12px;
+}
+
+.product-items .loyalty-points-listing {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+}
+
+.product-item-info {
+    position: relative;
+}
+
+/* =============================================
+   Dark Mode Support (Optional)
+   ============================================= */
+
+@media (prefers-color-scheme: dark) {
+    .loyalty-stat-card {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+
+    .loyalty-stat-card .stat-value {
+        color: #e2e8f0;
+    }
+
+    .loyalty-stat-card .stat-label {
+        color: #a0aec0;
+    }
+
+    .loyalty-transactions-table th {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+
+    .loyalty-transactions-table td {
+        border-color: #4a5568;
+    }
+
+    .loyalty-checkout-form {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+
+    .loyalty-checkout-form .form-title {
+        color: #e2e8f0;
+    }
+
+    .loyalty-checkout-form .points-info {
+        background: #1a202c;
+    }
+
+    .loyalty-checkout-form input[type="number"] {
+        background: #1a202c;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+}

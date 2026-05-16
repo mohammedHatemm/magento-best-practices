@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Add loyalty points display to product page
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Add points badge after price -->
+        <referenceContainer name="product.info.main">
+            <block class="Elsherif\LoyaltySystem\Block\Product\Points"
+                   name="loyalty.product.points"
+                   template="Elsherif_LoyaltySystem::product/points.phtml"
+                   after="product.info.price"/>
+        </referenceContainer>
+        
+        <!-- Also add to product info -->
+        <referenceBlock name="product.info.addtocart">
+            <block class="Elsherif\LoyaltySystem\Block\Product\Points"
+                   name="loyalty.product.points.addtocart"
+                   template="Elsherif_LoyaltySystem::product/points-mini.phtml"
+                   before="-"/>
+        </referenceBlock>
+    </body>
+</page>

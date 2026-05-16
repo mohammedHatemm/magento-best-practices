@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin System Configuration
+ * Stores > Configuration > Elsherif Extensions > Loyalty System
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <!-- Tab: Elsherif Extensions -->
+        <tab id="elsherif" translate="label" sortOrder="400">
+            <label>Elsherif Extensions</label>
+        </tab>
+        
+        <!-- Section: Loyalty System -->
+        <section id="loyalty_system" translate="label" type="text" sortOrder="100" 
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Loyalty System</label>
+            <tab>elsherif</tab>
+            <resource>Elsherif_LoyaltySystem::config</resource>
+            
+            <!-- Group 1: General Settings -->
+            <group id="general" translate="label" type="text" sortOrder="10" 
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                
+                <field id="enabled" translate="label" type="select" sortOrder="10" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Loyalty System</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable or disable the loyalty points system</comment>
+                </field>
+                
+                <field id="earn_rate" translate="label comment" type="text" sortOrder="20" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Points Earning Rate</label>
+                    <comment><![CDATA[Customer earns <strong>1 point</strong> for every <strong>X</strong> amount spent]]></comment>
+                    <validate>required-entry validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                
+                <field id="redeem_rate" translate="label comment" type="text" sortOrder="30" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Points Redemption Rate</label>
+                    <comment><![CDATA[<strong>X points</strong> = <strong>1 currency unit</strong> discount]]></comment>
+                    <validate>required-entry validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                
+                <field id="expiration_days" translate="label comment" type="text" sortOrder="40" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Points Expiration (Days)</label>
+                    <comment>Points will expire after X days. Set to 0 for no expiration.</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                
+                <field id="min_points_redeem" translate="label comment" type="text" sortOrder="50" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Minimum Points to Redeem</label>
+                    <comment>Minimum points required to use redemption feature</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                
+                <field id="max_points_per_order" translate="label comment" type="text" sortOrder="60" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Maximum Points Per Order</label>
+                    <comment>Maximum points that can be redeemed in a single order. Leave 0 for no limit.</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            
+            <!-- Group 2: Earning Rules -->
+            <group id="earning_rules" translate="label" type="text" sortOrder="20" 
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Earning Rules</label>
+                
+                <field id="earn_on_tax" translate="label" type="select" sortOrder="10" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Earn Points on Tax Amount</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Should customers earn points on tax amount?</comment>
+                </field>
+                
+                <field id="earn_on_shipping" translate="label" type="select" sortOrder="20" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Earn Points on Shipping Amount</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Should customers earn points on shipping amount?</comment>
+                </field>
+            </group>
+            
+            <!-- Group 3: Email Notifications -->
+            <group id="email" translate="label" type="text" sortOrder="30" 
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email Notifications</label>
+                
+                <field id="send_earn_email" translate="label" type="select" sortOrder="10" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Send Email When Points Earned</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Notify customers via email when they earn points</comment>
+                </field>
+                
+                <field id="send_expiry_reminder" translate="label" type="select" sortOrder="20" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Send Expiry Reminder Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Send reminder before points expire</comment>
+                </field>
+                
+                <field id="expiry_reminder_days" translate="label comment" type="text" sortOrder="30" 
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Reminder Days Before Expiry</label>
+                    <comment>Send reminder email X days before points expire</comment>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="send_expiry_reminder">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

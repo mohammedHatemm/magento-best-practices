@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Category view - loyalty points handled by Plugin (ListProductPlugin)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- Points display is handled by ListProductPlugin - no layout changes needed -->
+</page>

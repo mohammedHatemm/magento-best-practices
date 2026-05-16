@@ -1,0 +1,73 @@
+<!-- ko if: availablePoints() > 0 -->
+<div class="loyalty-points-block" data-bind="css: { 'applied': isApplied() }">
+    <div class="payment-option">
+        <div class="payment-option-title">
+            <span class="payment-icon">🎁</span>
+            <strong data-bind="i18n: 'Use Loyalty Points'"></strong>
+        </div>
+
+        <div class="payment-option-content">
+            <p class="available-points">
+                <span data-bind="i18n: 'You have'"></span>
+                <strong data-bind="text: availablePoints()"></strong>
+                <span data-bind="i18n: 'points available'"></span>
+            </p>
+
+            <!-- ko ifnot: isApplied() -->
+            <div class="field points-input">
+                <label class="label" for="points-to-use">
+                    <span data-bind="i18n: 'Points to use'"></span>
+                </label>
+                <div class="control">
+                    <input type="number"
+                           id="points-to-use"
+                           name="points_to_use"
+                           class="input-text"
+                           data-bind="value: pointsToUse, attr: { max: maxPointsAllowed() }"
+                           min="0"
+                           placeholder="0" />
+                </div>
+                <!-- ko if: pointsToUse() > 0 -->
+                <p class="note discount-preview">
+                    <span data-bind="i18n: 'Discount:'"></span>
+                    <strong data-bind="text: getDiscountPreview()"></strong>
+                    <span data-bind="i18n: 'EGP'"></span>
+                </p>
+                <!-- /ko -->
+            </div>
+
+            <div class="actions-toolbar">
+                <button type="button"
+                        class="action action-apply primary"
+                        data-bind="click: applyPoints, enable: !isLoading() && pointsToUse() > 0">
+                    <span data-bind="i18n: 'Apply Points'"></span>
+                </button>
+            </div>
+            <!-- /ko -->
+
+            <!-- ko if: isApplied() -->
+            <div class="applied-message success-msg">
+                <span class="icon">✓</span>
+                <span data-bind="text: pointsToUse()"></span>
+                <span data-bind="i18n: 'points applied successfully!'"></span>
+
+                <button type="button"
+                        class="action action-cancel"
+                        data-bind="click: cancelPoints, enable: !isLoading()">
+                    <span data-bind="i18n: 'Cancel'"></span>
+                </button>
+            </div>
+            <!-- /ko -->
+
+            <!-- ko if: isLoading() -->
+            <div class="loading-mask">
+                <div class="loader">
+                    <img src="<?php echo $block->getViewFileUrl('images/loader-1.gif'); ?>"
+                         alt="Loading...">
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+<!-- /ko -->

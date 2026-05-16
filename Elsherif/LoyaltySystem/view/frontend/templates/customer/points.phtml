@@ -1,0 +1,93 @@
+<?php
+/**
+ * @var \Elsherif\LoyaltySystem\Block\Customer\Points $block
+ */
+$balance = $block->getPointsBalance();
+?>
+
+<div class="loyalty-points-page">
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base"><?= $block->escapeHtml(__('My Loyalty Points')) ?></span>
+        </h1>
+    </div>
+
+    <div class="block block-dashboard-info">
+        <div class="block-content">
+            <div class="points-summary">
+                <!-- Current Points -->
+                <div class="points-card current-points">
+                    <div class="card-icon">
+                        <svg width="50" height="50" viewBox="0 0 24 24">
+                            <path fill="#FF6B35" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
+                        </svg>
+                    </div>
+                    <h2><?= $block->escapeHtml(__('Available Points')) ?></h2>
+                    <div class="points-value">
+                        <?= $block->escapeHtml($balance->getPoints()) ?>
+                    </div>
+                    <p class="points-worth">
+                        <?= $block->escapeHtml(
+                            __('Worth: %1', $block->formatPrice($block->getPointsValue($balance->getPoints())))
+                        ) ?>
+                    </p>
+                </div>
+
+                <!-- Lifetime Points -->
+                <div class="points-card lifetime-points">
+                    <div class="card-icon">📊</div>
+                    <h2><?= $block->escapeHtml(__('Lifetime Points')) ?></h2>
+                    <div class="points-value">
+                        <?= $block->escapeHtml($balance->getLifetimePoints()) ?>
+                    </div>
+                </div>
+
+                <!-- Spent Points -->
+                <div class="points-card spent-points">
+                    <div class="card-icon">💰</div>
+                    <h2><?= $block->escapeHtml(__('Points Spent')) ?></h2>
+                    <div class="points-value">
+                        <?= $block->escapeHtml($balance->getPointsSpent()) ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How it Works -->
+            <div class="points-info">
+                <h3><?= $block->escapeHtml(__('How it works?')) ?></h3>
+                <ul class="points-rules">
+                    <li>
+                        <strong><?= $block->escapeHtml(__('Earning:')) ?></strong>
+                        <?= $block->escapeHtml(
+                            __('Earn 1 point for every %1 spent', $block->formatPrice($block->getEarnRate()))
+                        ) ?>
+                    </li>
+                    <li>
+                        <strong><?= $block->escapeHtml(__('Redeeming:')) ?></strong>
+                        <?= $block->escapeHtml(
+                            __('%1 points = %2 discount', $block->getRedeemRate(), $block->formatPrice(1))
+                        ) ?>
+                    </li>
+                    <?php if ($block->getExpirationDays() > 0): ?>
+                    <li>
+                        <strong><?= $block->escapeHtml(__('Expiration:')) ?></strong>
+                        <?= $block->escapeHtml(
+                            __('Points expire after %1 days', $block->getExpirationDays())
+                        ) ?>
+                    </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <a href="<?= $block->escapeUrl($block->getTransactionsUrl()) ?>" 
+                       class="action primary">
+                        <span><?= $block->escapeHtml(__('View Transaction History')) ?></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

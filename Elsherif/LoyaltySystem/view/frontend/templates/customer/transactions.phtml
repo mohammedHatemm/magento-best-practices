@@ -1,0 +1,89 @@
+<?php
+/**
+ * @var \Elsherif\LoyaltySystem\Block\Customer\Transactions $block
+ */
+$transactions = $block->getTransactions();
+?>
+
+<div class="loyalty-transactions-page">
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base"><?= $block->escapeHtml(__('Points Transaction History')) ?></span>
+        </h1>
+    </div>
+
+    <div class="block block-dashboard-info">
+        <div class="block-content">
+            <!-- Back to Points -->
+            <div class="actions-toolbar">
+                <div class="secondary">
+                    <a href="<?= $block->escapeUrl($block->getPointsUrl()) ?>" 
+                       class="action back">
+                        <span><?= $block->escapeHtml(__('Back to Points Summary')) ?></span>
+                    </a>
+                </div>
+            </div>
+
+            <?php if ($transactions && $transactions->getSize()): ?>
+                <div class="table-wrapper transactions-list">
+                    <table class="data table table-transactions" id="my-transactions-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col date"><?= $block->escapeHtml(__('Date')) ?></th>
+                                <th scope="col" class="col type"><?= $block->escapeHtml(__('Type')) ?></th>
+                                <th scope="col" class="col points"><?= $block->escapeHtml(__('Points')) ?></th>
+                                <th scope="col" class="col balance"><?= $block->escapeHtml(__('Balance')) ?></th>
+                                <th scope="col" class="col description"><?= $block->escapeHtml(__('Description')) ?></th>
+                                <th scope="col" class="col expiry"><?= $block->escapeHtml(__('Expires On')) ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($transactions as $transaction): ?>
+                                <tr class="<?= $block->escapeHtmlAttr($block->getTypeClass($transaction->getAction())) ?>">
+                                    <td class="col date" data-th="<?= $block->escapeHtmlAttr(__('Date')) ?>">
+                                        <?= $block->escapeHtml($block->formatTransactionDate($transaction->getCreatedAt())) ?>
+                                    </td>
+                                    <td class="col type" data-th="<?= $block->escapeHtmlAttr(__('Type')) ?>">
+                                        <span class="transaction-type-label">
+                                            <?= $block->escapeHtml($block->getTypeLabel($transaction->getAction())) ?>
+                                        </span>
+                                    </td>
+                                    <td class="col points" data-th="<?= $block->escapeHtmlAttr(__('Points')) ?>">
+                                        <span class="points-change <?= $transaction->getPoints() > 0 ? 'positive' : 'negative' ?>">
+                                            <?= $transaction->getPoints() > 0 ? '+' : '' ?><?= $block->escapeHtml($transaction->getPoints()) ?>
+                                        </span>
+                                    </td>
+                                    <td class="col balance" data-th="<?= $block->escapeHtmlAttr(__('Balance')) ?>">
+                                        <?= $block->escapeHtml($transaction->getBalanceAfter()) ?>
+                                    </td>
+                                    <td class="col description" data-th="<?= $block->escapeHtmlAttr(__('Description')) ?>">
+                                        <?= $block->escapeHtml($transaction->getComment() ?: '-') ?>
+                                    </td>
+                                    <td class="col expiry" data-th="<?= $block->escapeHtmlAttr(__('Expires On')) ?>">
+                                        <?php if ($transaction->getExpiresAt()): ?>
+                                            <?= $block->escapeHtml($block->formatTransactionDate($transaction->getExpiresAt())) ?>
+                                        <?php else: ?>
+                                            <span class="no-expiry">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <?php if ($block->getPagerHtml()): ?>
+                    <div class="toolbar transactions-toolbar bottom">
+                        <?= $block->getPagerHtml() ?>
+                    </div>
+                <?php endif; ?>
+
+            <?php else: ?>
+                <div class="message info empty">
+                    <span><?= $block->escapeHtml(__('You have no transaction history yet.')) ?></span>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

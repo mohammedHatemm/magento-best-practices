@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Admin Menu
+ * Marketing > Loyalty System
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Main Menu Item -->
+        <add id="Elsherif_LoyaltySystem::loyalty"
+             title="Loyalty System"
+             translate="title"
+             module="Elsherif_LoyaltySystem"
+             sortOrder="100"
+             parent="Magento_Backend::marketing"
+             resource="Elsherif_LoyaltySystem::loyalty"/>
+        
+        <!-- Sub Menu: Points Balances -->
+        <add id="Elsherif_LoyaltySystem::points_balances"
+             title="Points Balances"
+             translate="title"
+             module="Elsherif_LoyaltySystem"
+             sortOrder="10"
+             parent="Elsherif_LoyaltySystem::loyalty"
+             action="loyalty/points/index"
+             resource="Elsherif_LoyaltySystem::points_view"/>
+        
+        <!-- Sub Menu: Transactions -->
+        <add id="Elsherif_LoyaltySystem::transactions"
+             title="Transactions"
+             translate="title"
+             module="Elsherif_LoyaltySystem"
+             sortOrder="20"
+             parent="Elsherif_LoyaltySystem::loyalty"
+             action="loyalty/transaction/index"
+             resource="Elsherif_LoyaltySystem::transactions_view"/>
+        
+        <!-- Sub Menu: Configuration -->
+        <add id="Elsherif_LoyaltySystem::config"
+             title="Configuration"
+             translate="title"
+             module="Elsherif_LoyaltySystem"
+             sortOrder="100"
+             parent="Elsherif_LoyaltySystem::loyalty"
+             action="adminhtml/system_config/edit/section/loyalty_system"
+             resource="Elsherif_LoyaltySystem::config"/>
+    </menu>
+</config>

@@ -1,0 +1,33 @@
+type Query {
+    customerPoints: CustomerPointsBalance 
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\CustomerPoints") 
+        @doc(description: "Get current customer's points balance") 
+        @cache(cacheIdentity: "Elsherif\\LoyaltySystem\\Model\\Resolver\\Identity\\PointsIdentity")
+}
+
+type Mutation {
+    redeemPoints(input: RedeemPointsInput!): RedeemPointsOutput 
+        @resolver(class: "Elsherif\\LoyaltySystem\\Model\\Resolver\\RedeemPoints")
+}
+
+type CustomerPointsBalance {
+    balance_id: Int
+    customer_id: Int
+    points: Int @doc(description: "Available points")
+    lifetime_points: Int
+    points_spent: Int
+    updated_at: String
+}
+
+input RedeemPointsInput {
+    cart_id: String!
+    points: Int!
+}
+
+type RedeemPointsOutput {
+    success: Boolean
+    message: String
+    points_used: Int
+    discount_amount: Float
+    new_balance: Int
+}

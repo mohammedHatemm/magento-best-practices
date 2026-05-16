@@ -1,0 +1,37 @@
+<?php
+/**
+ * Mini loyalty points badge
+ * @var \Elsherif\LoyaltySystem\Block\Product\Points $block
+ */
+
+if (!$block->shouldShow()) {
+    return;
+}
+
+$points = $block->getProductPoints();
+?>
+
+<div class="loyalty-points-mini">
+    <span class="icon">⭐</span>
+    <span class="text"><?= $block->escapeHtml(__('+ %1 Points', $points)) ?></span>
+</div>
+
+<style>
+.loyalty-points-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: #f0f4ff;
+    border: 1px solid #667eea;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.loyalty-points-mini .icon {
+    font-size: 14px;
+}
+</style>

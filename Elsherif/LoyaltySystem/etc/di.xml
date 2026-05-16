@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dependency Injection Configuration
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    
+    <!-- Service Contract Preferences -->
+    <preference for="Elsherif\LoyaltySystem\Api\PointsManagementInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsManagement"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\PointsBalanceRepositoryInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsBalanceRepository"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\PointsTransactionRepositoryInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsTransactionRepository"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\Data\PointsBalanceInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsBalance"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\Data\PointsTransactionInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsTransaction"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\Data\RedemptionResultInterface"
+                type="Elsherif\LoyaltySystem\Model\RedemptionResult"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\Data\PointsBalanceSearchResultsInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsBalanceSearchResults"/>
+    
+    <preference for="Elsherif\LoyaltySystem\Api\Data\PointsTransactionSearchResultsInterface"
+                type="Elsherif\LoyaltySystem\Model\PointsTransactionSearchResults"/>
+    
+    <!-- Virtual Types for Logging -->
+    <virtualType name="LoyaltySystemLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">loyalty_system</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">LoyaltySystemLogHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <virtualType name="LoyaltySystemLogHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/loyalty_system.log</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Inject Logger -->
+    <type name="Elsherif\LoyaltySystem\Model\Config">
+        <arguments>
+            <argument name="logger" xsi:type="object">LoyaltySystemLogger</argument>
+        </arguments>
+    </type>
+    
+    <type name="Elsherif\LoyaltySystem\Model\PointsManagement">
+        <arguments>
+            <argument name="logger" xsi:type="object">LoyaltySystemLogger</argument>
+        </arguments>
+    </type>
+    
+    <!-- Plugin: Apply Discount to Quote Totals -->
+    <type name="Magento\Quote\Model\Quote">
+        <plugin name="loyalty_apply_discount" 
+                type="Elsherif\LoyaltySystem\Plugin\Quote\Model\QuoteTotalPlugin" 
+                sortOrder="100"/>
+    </type>
+    
+    <!-- Plugin: Load/Save Quote Extension Attributes -->
+    <type name="Magento\Quote\Api\CartRepositoryInterface">
+        <plugin name="loyalty_quote_extension_attributes" 
+                type="Elsherif\LoyaltySystem\Plugin\Quote\QuoteRepositoryPlugin" 
+                sortOrder="10"/>
+    </type>
+    
+    <!-- Plugin: Load/Save Order Extension Attributes -->
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="loyalty_order_extension_attributes" 
+                type="Elsherif\LoyaltySystem\Plugin\Order\OrderRepositoryPlugin" 
+                sortOrder="10"/>
+    </type>
+    
+    <!-- Plugin: Add Points to Product Listing -->
+    <type name="Magento\Catalog\Block\Product\ListProduct">
+        <plugin name="loyalty_product_listing_points" 
+                type="Elsherif\LoyaltySystem\Plugin\Catalog\Block\Product\ListProductPlugin" 
+                sortOrder="10"/>
+    </type>
+    
+    <!-- Plugin: Earn Points on Order Place -->
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="loyalty_earn_points_on_order" 
+                type="Elsherif\LoyaltySystem\Plugin\Order\EarnPointsPlugin" 
+                sortOrder="10"/>
+    </type>
+    
+    <!-- CLI Commands -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="loyalty_add_points" xsi:type="object">Elsherif\LoyaltySystem\Console\Command\AddPointsCommand</item>
+                <item name="loyalty_expire_points" xsi:type="object">Elsherif\LoyaltySystem\Console\Command\ExpirePointsCommand</item>
+            </argument>
+        </arguments>
+    </type>
+    
+</config>

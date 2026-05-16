@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    
+    <!-- Get Customer Balance -->
+    <route url="/V1/loyalty/balance/:customerId" method="GET">
+        <service class="Elsherif\LoyaltySystem\Api\PointsManagementInterface" method="getBalance"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+    </route>
+
+    <!-- Add Points (Admin only) -->
+    <route url="/V1/loyalty/points/add" method="POST">
+        <service class="Elsherif\LoyaltySystem\Api\PointsManagementInterface" method="addPoints"/>
+        <resources>
+            <resource ref="Elsherif_LoyaltySystem::points_manage"/>
+        </resources>
+    </route>
+
+    <!-- Redeem Points -->
+    <route url="/V1/loyalty/redeem" method="POST">
+        <service class="Elsherif\LoyaltySystem\Api\PointsManagementInterface" method="redeemPoints"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+    </route>
+
+    <!-- Cancel Redemption -->
+    <route url="/V1/loyalty/cancel" method="POST">
+        <service class="Elsherif\LoyaltySystem\Api\PointsManagementInterface" method="cancelRedemption"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+    </route>
+</routes>
