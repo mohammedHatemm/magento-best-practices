@@ -82,10 +82,19 @@
                 sortOrder="10"/>
     </type>
     
-    <!-- Plugin: Add Points to Product Listing -->
+    <!-- Plugin: Add Points to Product Listing - DISABLED, using JS approach instead -->
+    <!--
     <type name="Magento\Catalog\Block\Product\ListProduct">
         <plugin name="loyalty_product_listing_points" 
                 type="Elsherif\LoyaltySystem\Plugin\Catalog\Block\Product\ListProductPlugin" 
+                sortOrder="10"/>
+    </type>
+    -->
+    
+    <!-- Plugin: Add loyalty_points to product collection -->
+    <type name="Magento\Catalog\Model\ResourceModel\Product\Collection">
+        <plugin name="loyalty_add_attribute_to_collection" 
+                type="Elsherif\LoyaltySystem\Plugin\Catalog\ProductCollectionPlugin" 
                 sortOrder="10"/>
     </type>
     

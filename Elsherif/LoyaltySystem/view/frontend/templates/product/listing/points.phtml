@@ -1,0 +1,39 @@
+<?php
+/**
+ * Loyalty Points for Product Listing - JavaScript injection
+ */
+/** @var \Elsherif\LoyaltySystem\Block\Product\ListingPoints $block */
+?>
+<?php if ($block->isEnabled()): ?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Elsherif_LoyaltySystem/js/product-listing-points": {
+            "products": <?= /* @noEscape */ $block->getProductPointsJson() ?>,
+            "template": "<div class=\"loyalty-points-badge-listing\"><span class=\"loyalty-icon\">🏆</span> <span class=\"points-text\">+<span class=\"points-value\">{{points}}</span> <?= $block->escapeJs(__('Points')) ?></span></div>"
+        }
+    }
+}
+</script>
+<style>
+.loyalty-points-badge-listing {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.loyalty-points-badge-listing .loyalty-icon {
+    font-size: 14px;
+}
+.loyalty-points-badge-listing .points-value {
+    font-weight: 700;
+}
+</style>
+<?php endif; ?>

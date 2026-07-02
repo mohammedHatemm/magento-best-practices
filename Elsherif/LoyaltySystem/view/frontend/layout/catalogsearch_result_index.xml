@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Category view - Add loyalty points to product listing
+ * Search results - Add loyalty points to product listing
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,7 +9,7 @@
     <body>
         <referenceContainer name="content">
             <block class="Elsherif\LoyaltySystem\Block\Product\ListingPoints"
-                   name="loyalty.listing.points"
+                   name="loyalty.listing.points.search"
                    template="Elsherif_LoyaltySystem::product/listing/points.phtml"
                    after="-"/>
         </referenceContainer>
